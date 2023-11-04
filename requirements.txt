@@ -1,0 +1,3 @@
+librosa
+pretty_midi
+tensorflow
