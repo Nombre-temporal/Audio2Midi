@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reproductor MIDI HTML</title>
+  <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+  <style>
+
+    :root{
+      --haiti-50: 240 235 255;
+      --haiti-100: 226 218 255;
+      --haiti-200: 206 189 255;
+      --haiti-300: 180 149 255;
+      --haiti-400: 163 107 255;
+      --haiti-500: 156 72 255;
+      --haiti-600: 157 40 255;
+      --haiti-700: 141 29 229;
+      --haiti-800: 113 26 185;
+      --haiti-900: 91 30 145;
+      --haiti-950: 27 9 42;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+    .gb-container{
+      margin: auto;
+      max-width: 1200px;
+      display: flex;
+      flex-flow: column nowrap;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .custom-file{
+      margin: 1rem 0;
+      
+    }
+    #midiPlayerContainer {
+      display: flex;
+      justify-content: center;
+      justify-items: center;
+      align-items: center;
+      flex-flow: column;
+      width: 100%;
+    }
+    .staff-container {
+      width: 100%;
+      padding-right: 50%;
+      overflow: auto;
+    }
+    .staff-content {
+      width: 100%; /* Ajusta el ancho según tus necesidades */
+    }
+    #myVisualizer {
+      width: fit-content;
+    }
+    midi-player {
+      width: 100%;
+    }
+
+    @keyframes scrollRight {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-100%); /* Adjust this value to control the scrolling distance */
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="gb-container">
+    <h1 class="h1">MIDI Player ▶</h1>
+    <div class="custom-file w-auto">
+      <input type="file" class="custom-file-input" id="midiFileInput" style="background-color: var(--haiti-500)">
+      <label class="custom-file-label" for="midiFileInput">Selecciona un archivo MIDI</label>
+    </div>
+    <div id="midiPlayerContainer">
+      <midi-visualizer type="waterfall" id="myVisualizer"></midi-visualizer>
+      <div class="staff-container">
+        <div class="staff-content">
+          <midi-visualizer type="staff" id="myVisualizer"></midi-visualizer>
+        </div>
+      </div>
+      <midi-player
+        src=""
+        sound-font
+        visualizer="#midiPlayerContainer midi-visualizer"
+      ></midi-player>
+    </div>
+  </div>
+  <script>
+    const midiFileInput = document.getElementById('midiFileInput');
+    const staffContent = document.querySelector('.staff-content');
+
+    midiFileInput.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = (readerEvent) => {
+        const midiData = readerEvent.target.result;
+        const midiPlayer = document.querySelector('midi-player');
+        midiPlayer.setAttribute('src', URL.createObjectURL(file));
+
+        // No es necesario volver a agregar <midi-visualizer> al contenedor
+      };
+
+      reader.readAsArrayBuffer(file);
+    });
+
+    const midiPlayer = document.querySelector('midi-player');
+    const staffVisualizer = document.querySelector('#myVisualizer');
+
+    // Detecta cuando la reproducción del MIDI comienza
+    midiPlayer.addEventListener('click', () => {
+      
+      // Configura una animación para desplazar el contenido gradualmente
+      const scrollDuration = midiPlayer.duration / staffContent.scrollWidth;
+      setTimeout(()=>{
+        
+        staffVisualizer.scrollTo(staffVisualizer.scrollWidth, 0, scrollDuration);
+      }, 1000);
+      
+    });
+  </script>
+</body>
+</html>
