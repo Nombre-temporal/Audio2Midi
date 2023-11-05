@@ -4,27 +4,26 @@
   <title>Reproductor MIDI HTML</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
   <link rel="stylesheet" href="style.css">
-
-  
 </head>
 <body>
   <div class="gb-container">
     <h1 class="h1">
-      MIDI Player &nbsp<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-music-note-list" viewBox="0 0 16 16">
+      MIDI Player &nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-music-note-list" viewBox="0 0 16 16">
         <path d="M12 13c0 1.105-1.12 2-2.5 2S7 14.105 7 13s1.12-2 2.5-2 2.5.895 2.5 2z"/>
         <path fill-rule="evenodd" d="M12 3v10h-1V3h1z"/>
         <path d="M11 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 16 2.22V4l-5 1V2.82z"/>
         <path fill-rule="evenodd" d="M0 11.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 .5 7H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 .5 3H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5z"/>
-      </svg> </h1>
+      </svg>
+    </h1>
     <div class="custom-file w-auto">
-      <input type="file" class="custom-file-input" id="midiFileInput" >
+      <input type="file" class="custom-file-input" id="midiFileInput">
       <label class="custom-file-label" for="midiFileInput">Selecciona un archivo MIDI</label>
     </div>
     <div id="midiPlayerContainer">
       <midi-visualizer type="waterfall" id="waterfall-visualizer"></midi-visualizer>
       <div class="staff-container">
         <div class="staff-content">
-          <midi-visualizer type="staff" class = "visualizer" id="staff-visualizer"></midi-visualizer>
+          <midi-visualizer type="staff" class="visualizer" id="staff-visualizer"></midi-visualizer>
         </div>
       </div>
       <midi-player
