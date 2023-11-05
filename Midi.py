@@ -2,9 +2,10 @@ import librosa
 import pretty_midi as pm
 import numpy as np
 
+from song import Song
+
 FRAMELEN = librosa.frames_to_time(1)
 THRESHOLD = 0
-
 
 class MidiNote:
     def __init__(self, pitch, start, end, velocity):
@@ -26,6 +27,13 @@ class Midi:
     def create_midi(self):
         midi = pm.PrettyMIDI(initial_tempo=self.tempo)
         midi.instruments.append(self.track)
+
+        notes = midi.get_pitch_class_histogram()
+        gamma = [n for _, n in sorted([(count, ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'][i])
+                                       for i, count in enumerate(notes)], reverse=True)[:7]]
+        blacks = sorted(n for n in gamma if len(n) > 1)
+        keySignature = Song.get_song_key(blacks, gamma)
+        midi.key_signature_changes += [pm.KeySignature(pm.key_name_to_key_number(keySignature), 0)]
         return midi
 
     def save(self, output_path):
@@ -34,20 +42,14 @@ class Midi:
     def get_track_from_probabilities(self, actProb, onProb, volProb):
         track = pm.Instrument(program=pm.instrument_name_to_program('Acoustic Grand Piano'),
                               name='Acoustic Grand Piano')
-
-
         intervals, frameLenSecs = {}, librosa.frames_to_time(1)  # Time is in absolute seconds, not relative MIDI ticks
-        ########################################################
         onsets = (onProb > THRESHOLD).astype(np.int8)
         frames = onsets | (actProb > THRESHOLD).astype(
             np.int8)  # Ensure that any frame with an onset prediction is considered active.
 
-        #######################################################
-
         def EndPitch(pitch, endFrame):
-            #######################################################################################
+
             if volProb[intervals[pitch], pitch] < 0 or volProb[intervals[pitch], pitch] > 1: return
-            #######################################################################################
             track.notes += [pm.Note(int(max(0, min(1, volProb[intervals[pitch], pitch])) * 80 + 10), pitch + 21,
                                     intervals[pitch] * frameLenSecs, endFrame * frameLenSecs)]
             del intervals[pitch]
