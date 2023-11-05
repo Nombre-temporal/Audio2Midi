@@ -18,16 +18,13 @@ midiFileInput.addEventListener('change', (event) => {
 });
 
 const midiPlayer = document.querySelector('midi-player');
-const staffVisualizer = document.querySelector('#myVisualizer');
+const staffVisualizer = document.getElementById('staff-visualizer');
 
 // Detecta cuando la reproducción del MIDI comienza
 midiPlayer.addEventListener('click', () => {
-  
-  // Configura una animación para desplazar el contenido gradualmente
-  const scrollDuration = midiPlayer.duration / staffContent.scrollWidth;
-  setTimeout(()=>{
-    
-    staffVisualizer.scrollTo(staffVisualizer.scrollWidth, 0, scrollDuration);
-  }, 1000);
+
+  staffVisualizer.style.padding = `1rem`;
+  staffVisualizer.style.animation = `1rem`;
+
   
 });
