@@ -2,36 +2,45 @@
 <html>
 <head>
   <title>Reproductor MIDI HTML</title>
-  <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-
   <style>
 
     :root{
-      --haiti-50: 240 235 255;
-      --haiti-100: 226 218 255;
-      --haiti-200: 206 189 255;
-      --haiti-300: 180 149 255;
-      --haiti-400: 163 107 255;
-      --haiti-500: 156 72 255;
-      --haiti-600: 157 40 255;
-      --haiti-700: 141 29 229;
-      --haiti-800: 113 26 185;
-      --haiti-900: 91 30 145;
-      --haiti-950: 27 9 42;
+      --havelock-blue-50: #f3f6fc;
+      --havelock-blue-100: #e7eef7;
+      --havelock-blue-200: #c9dbee;
+      --havelock-blue-300: #9abddf;
+      --havelock-blue-400: #649bcc;
+      --havelock-blue-500: #518cc2;
+      --havelock-blue-600: #2f649a;
+      --havelock-blue-700: #27507d;
+      --havelock-blue-800: #244568;
+      --havelock-blue-900: #223b58;
+      --havelock-blue-950: #17263a;
+
     }
+
     * {
-      margin: 0;
-      padding: 0;
+
       box-sizing: border-box;
     }
     html, body {
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
+      background: rgb(23,38,58);
+      background: -moz-linear-gradient(121deg, rgba(23,38,58,1) 0%, rgba(36,69,104,1) 100%);
+      background: -webkit-linear-gradient(121deg, rgba(23,38,58,1) 0%, rgba(36,69,104,1) 100%);
+      background: linear-gradient(121deg, rgba(23,38,58,1) 0%, rgba(36,69,104,1) 100%);
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#17263a",endColorstr="#244568",GradientType=1);
     }
     .gb-container{
+      box-shadow: 0px 0px 3px 1px var(--havelock-blue-100);
+      border-radius: 1rem;
+      background-color: var(--havelock-blue-50);
       margin: auto;
+      margin-top: 3rem;
       max-width: 1200px;
+      height: fit-content;
       display: flex;
       flex-flow: column nowrap;
       align-items: center;
@@ -39,7 +48,7 @@
     }
 
     .custom-file{
-      margin: 1rem 0;
+      margin: 1rem 0 3rem 0;
       
     }
     #midiPlayerContainer {
@@ -78,7 +87,13 @@
 </head>
 <body>
   <div class="gb-container">
-    <h1 class="h1">MIDI Player ▶</h1>
+    <h1 class="h1">
+      MIDI Player &nbsp<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-music-note-list" viewBox="0 0 16 16">
+        <path d="M12 13c0 1.105-1.12 2-2.5 2S7 14.105 7 13s1.12-2 2.5-2 2.5.895 2.5 2z"/>
+        <path fill-rule="evenodd" d="M12 3v10h-1V3h1z"/>
+        <path d="M11 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 16 2.22V4l-5 1V2.82z"/>
+        <path fill-rule="evenodd" d="M0 11.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 .5 7H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 .5 3H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5z"/>
+      </svg> </h1>
     <div class="custom-file w-auto">
       <input type="file" class="custom-file-input" id="midiFileInput" style="background-color: var(--haiti-500)">
       <label class="custom-file-label" for="midiFileInput">Selecciona un archivo MIDI</label>
@@ -97,6 +112,7 @@
       ></midi-player>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0"></script>
   <script>
     const midiFileInput = document.getElementById('midiFileInput');
     const staffContent = document.querySelector('.staff-content');
