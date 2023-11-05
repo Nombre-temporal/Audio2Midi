@@ -11,13 +11,12 @@ class Audio2MidiModel:
         self.input_len = self.input_details['shape'][0]
         self.output_step = self.interpreter.get_output_details()[0]['shape'][1] * 512
 
-
     def process_song_segment(self, song_segment):
         self.interpreter.set_tensor(self.input_details['index'], song_segment)
         self.interpreter.invoke()
 
         def get_output(index):
-            return np.vstack((np.empty((1, 88)), self.interpreter.get_tensor(self.output_details[index]['index'])[0]))
+            return self.interpreter.get_tensor(self.output_details[index]['index'])[0]
 
         actProb = get_output(0)
         onProb = get_output(1)
