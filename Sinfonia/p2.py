@@ -2,6 +2,8 @@ import math
 import cv2
 import mediapipe as mp
 import pygame
+import threading
+import time
 
 # Constantes y configuraciones
 CAMERA_INDEX = 0
@@ -10,8 +12,14 @@ AUDIO_FILES = {
     "right_hand_up": "./wavs/right_hand_up.wav",
     "right_hand_left": "./wavs/right_hand_left.wav",
     "right_hand_down": "./wavs/right_hand_down.wav",
-    "right_hand_right": "./wavs/right_hand_right.wav"
+    "right_hand_right": "./wavs/right_hand_right.wav",
+    "left_hand_up": "./wavs/left_hand_up.wav",
+    "left_hand_left": "./wavs/left_hand_left.wav",
+    "left_hand_down": "./wavs/left_hand_down.wav",
+    "left_hand_right": "./wavs/left_hand_right.wav"
 }
+
+
 
 class HandDetector:
     """Clase para detectar las manos utilizando MediaPipe."""
@@ -41,9 +49,14 @@ class HandDetector:
                 lm_list.append((id, cx, cy))
         return lm_list
 
-import pygame
-import threading
-import time
+    def find_hand_type(self, hand_no=0):
+        """Determina si la mano es izquierda o derecha."""
+        if self.results.multi_handedness:
+            hand_info = self.results.multi_handedness[hand_no]
+            return hand_info.classification[0].label
+        return None
+
+
 
 class AudioPlayer:
     """Clase para reproducir audio con Pygame, sincronizado con los BPM y con una cola de reproducción que mantiene solo el último audio por canal."""
@@ -88,9 +101,6 @@ class AudioPlayer:
 
 
 
-
-
-
 def calculate_angle(wrist, middle_tip):
     """Calcula el ángulo entre la muñeca y la punta del dedo medio."""
     dx = middle_tip[1] - wrist[1]
@@ -119,39 +129,48 @@ def process_image(hand_detector, audio_player, image):
     return image
 
 
-def play_audio_based_on_hand_position(audio_player, lm_list, hand_no):
+def play_audio_based_on_hand_position(audio_player, lm_list, hand_type):
     """Decide qué audio reproducir basado en la posición de la mano."""
     wrist = lm_list[0]
     middle_tip = lm_list[12]
     angle_deg = calculate_angle(wrist, middle_tip)
 
-    #print(f"Ángulo entre la muñeca y la punta del dedo medio: {angle_deg} grados")
+    hand_prefix = "left" if hand_type == "Left" else "right"
+    hand_index = 0 if hand_type == "Left" else 1
 
     if 225 <= angle_deg < 315:
-    #    print("Reproduciendo audio: right_hand_up")
-        audio_player.play_audio(AUDIO_FILES["right_hand_up"], hand_no)
+        audio_player.play_audio(AUDIO_FILES[f"{hand_prefix}_hand_up"],hand_index)
     elif 135 <= angle_deg < 225:
-    #    print("Reproduciendo audio: right_hand_left")
-        audio_player.play_audio(AUDIO_FILES["right_hand_left"], hand_no)
+        audio_player.play_audio(AUDIO_FILES[f"{hand_prefix}_hand_left"],hand_index)
     elif 45 <= angle_deg < 135:
-    #    print("Reproduciendo audio: right_hand_down")
-        audio_player.play_audio(AUDIO_FILES["right_hand_down"], hand_no)
+        audio_player.play_audio(AUDIO_FILES[f"{hand_prefix}_hand_down"],hand_index)
     else:
-    #    print("Reproduciendo audio: right_hand_right")
-        audio_player.play_audio(AUDIO_FILES["right_hand_right"], hand_no)
+        audio_player.play_audio(AUDIO_FILES[f"{hand_prefix}_hand_right"],hand_index)
+
 
 def main():
     try:
-        cap = initialize_camera()
+        cap = cv2.VideoCapture(CAMERA_INDEX)
         hand_detector = HandDetector()
-        audio_player = AudioPlayer()
+        audio_player = AudioPlayer()  # Ensure this class is implemented
 
         while True:
             success, image = cap.read()
             if not success:
                 continue
 
-            image = process_image(hand_detector, audio_player, image)
+            # Flip the image horizontally
+            image = cv2.flip(image, 1)
+
+            image = hand_detector.detect_hands(image)
+
+            if hand_detector.results.multi_hand_landmarks:
+                for i, handLms in enumerate(hand_detector.results.multi_hand_landmarks):
+                    hand_type = hand_detector.find_hand_type(i)
+                    lm_list = hand_detector.find_position(image, i)
+                    if lm_list:
+                        play_audio_based_on_hand_position(audio_player, lm_list, hand_type)
+
             cv2.imshow("Hand Tracking", image)
 
             if cv2.waitKey(1) & 0xFF == ESC_KEY:
@@ -164,3 +183,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
