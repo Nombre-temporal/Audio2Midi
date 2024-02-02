@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detector de Notas Musicales en Tiempo Real</title>
+    <style>
+        #note { font-size: 24px; }
+    </style>
+</head>
+<body>
+    <h1>Detector de Notas Musicales en Tiempo Real</h1>
+    <button onclick="startAudioProcessing()">Iniciar Detección</button>
+    <div id="note">Nota detectada aquí</div>
+
+    <script>
+        let audioContext, analyser, dataArray;
+        const historySize = 5;
+        const outlierThreshold = 15;
+
+        async function startAudioProcessing() {
+            if (!navigator.mediaDevices) {
+                document.getElementById('note').innerText = 'Dispositivo de audio no soportado';
+                return;
+            }
+
+            try {
+                audioContext = new AudioContext();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 2048;
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+                updateNote();
+            } catch (error) {
+                console.error('Error accessing the microphone:', error);
+                document.getElementById('note').innerText = 'Error al acceder al micrófono';
+            }
+        }
+
+        function updateNote() {
+            analyser.getByteFrequencyData(dataArray);
+            let maxIndex = dataArray.indexOf(Math.max(...dataArray));
+            if (maxIndex === -1 || dataArray[maxIndex] < 128) { // Umbral de intensidad mínimo
+                document.getElementById('note').innerText = 'Nota: No detectado';
+                requestAnimationFrame(updateNote);
+                return;
+            }
+
+            const frequency = maxIndex * audioContext.sampleRate / analyser.fftSize;
+            const note = frequencyToNote(frequency);
+
+            document.getElementById('note').innerText = `Nota: ${note}`;
+            requestAnimationFrame(updateNote);
+        }
+
+        function frequencyToNote(frequency) {
+            const A4 = 440;
+            const A4_INDEX = 69;
+            const SEMITONE = 1 / 12;
+
+            let noteIndex = Math.round(12 * Math.log2(frequency / A4)) + A4_INDEX;
+            return noteIndexToName(noteIndex);
+        }
+
+        function noteIndexToName(index) {
+            const scale = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+            const octave = Math.floor(index / 12) - 1;
+            const note = scale[index % 12];
+            return note + octave;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+
+html, body{
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+}
+
+#container {
+    width: 100%;
+    height: 100%; /* 3 segundos */
+    display: flex;
+}
+
+.note {
+    flex-grow: 1;
+    position: absolute;
+    border: 1px solid red;
+}
+

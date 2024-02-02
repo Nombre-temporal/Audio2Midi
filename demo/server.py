@@ -11,7 +11,7 @@ def index():
 def upload_file():
     if 'audio' in request.files:
         audio = request.files['audio']
-        audio_filename = "audio.wav"
+        audio_filename = "audio.mp3"
         audio.save(audio_filename)
 
         # Procesa el archivo de audio con tu función
